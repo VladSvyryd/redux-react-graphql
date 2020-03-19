@@ -7,11 +7,16 @@ export interface Result {
   value: number;
 }
 export const INCREMENT = "INCREMENT";
+export const DECREMENT = "DECREMENT";
+
 export const STORE_RESULT = "STORE_RESULT";
 export const DELETE_RESULT = "DELETE_RESULT";
 
 interface IncrementAction {
   type: typeof INCREMENT;
+}
+interface DecrementAction {
+  type: typeof DECREMENT;
 }
 
 interface StoreResultAction {
@@ -26,4 +31,5 @@ interface DeleteResultAction {
 export type CounterActionTypes =
   | IncrementAction
   | StoreResultAction
+  | DecrementAction
   | DeleteResultAction;

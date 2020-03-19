@@ -1,6 +1,7 @@
 import {
   Counter,
   CounterActionTypes,
+  DECREMENT,
   INCREMENT,
   STORE_RESULT,
   DELETE_RESULT
@@ -20,6 +21,12 @@ const reducer = (
         ...state,
         counter: state.counter + 1
       };
+    case DECREMENT:
+      return {
+        ...state,
+        counter: state.counter - 1
+      };
+
     case STORE_RESULT:
       const newRes = state.result.concat({
         id: new Date().toString(),
