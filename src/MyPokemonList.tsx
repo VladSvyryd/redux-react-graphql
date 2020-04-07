@@ -15,6 +15,7 @@ interface Pokemon {
   id: number;
   name: string;
   weaknesses: Array<String>;
+  number: number;
 }
 type MyPokemonListType = {
   counter: number;
@@ -26,12 +27,13 @@ const myPokemonQuery = gql`
       id
       name
       weaknesses
+      number
     }
   }
 `;
 
-function timeout(ms: number) {
-  return new Promise(resolve => setTimeout(resolve, ms));
+function timeout<Promise>(ms: number) {
+  return new Promise((resolve) => setTimeout(resolve, ms));
 }
 async function sleep() {
   console.log("start");
@@ -44,20 +46,20 @@ export const MyPokemonList = ({ counter }: MyPokemonListType) => {
     ReturnDataType,
     PokemonVars
   >(myPokemonQuery, {
-    variables: { first: counter }
+    variables: { first: counter },
   });
   const handleWaypointEnter = (i: number) => {
     console.log(i);
     fetchMore({
       variables: {
-        first: data?.pokemons.length
+        first: data?.pokemons.length,
       },
       updateQuery: (prev: ReturnDataType, { fetchMoreResult }) => {
         if (!fetchMoreResult) return prev;
         return Object.assign({}, prev, {
-          pokemons: [...prev.pokemons, ...fetchMoreResult.pokemons]
+          pokemons: [...prev.pokemons, ...fetchMoreResult.pokemons],
         });
-      }
+      },
     });
   };
   const handleWaypointLeave = () => {
@@ -65,34 +67,37 @@ export const MyPokemonList = ({ counter }: MyPokemonListType) => {
 
     data && data.pokemons.shift();
   };
-  if (loading) return <p>Loading...</p>;
+
   if (error) return <p>{`Èrror ${error.message}`}</p>;
   return (
     <div
-      style={{ height: "270px", overflowY: "auto", border: "green 2px solid" }}
+      style={{
+        display: "grid",
+        width: "90%",
+        gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))",
+        gridGap: "1rem",
+        justifyContent: "center",
+        alignItems: "center",
+        padding: "30px",
+        maxHeight: "453px",
+        overflowY: "auto",
+      }}
     >
-      <ul>
-        {data &&
-          data.pokemons.map((p: Pokemon, i) => (
-            <React.Fragment key={p.id}>
-              <li>
-                {p.name} :
-                <ul>
-                  weaknesses:
-                  {p.weaknesses.map(w => (
-                    <li key={w.toString()}>{w}</li>
-                  ))}
-                </ul>
-              </li>
-              {i === 0 && <Waypoint onLeave={() => handleWaypointLeave()} />}
-
-              {i === data.pokemons.length - 1 && false && (
-                <Waypoint onEnter={() => handleWaypointEnter(i)} />
-              )}
-            </React.Fragment>
-          ))}
-      </ul>
-      <button onClick={() => sleep()}>Refetch</button>
+      {data &&
+        data.pokemons.map((p: Pokemon, i) => (
+          <div key={p.id} style={{ maxWidth: "200px" }}>
+            <img
+              src={`https://img.pokemondb.net/artwork/${String(
+                p.name
+              ).toLocaleLowerCase()}.jpg`}
+              alt=""
+              width="100"
+              height="100"
+            />
+            <div>{p.number + " " + p.name}</div>
+          </div>
+        ))}
+      {loading && <p>Loading...</p>}
     </div>
   );
 };
